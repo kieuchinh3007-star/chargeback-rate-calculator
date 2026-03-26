@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -c \":*)",
+      "Bash(python -c \":*)",
+      "Bash(node -e \"console.log\\(''node available''\\)\")",
+      "Bash(node:*)",
+      "Bash(npx -y mammoth \"C:/Users/Admin/Desktop/tool1/tool1-chargeback-calculator.docx\" --output-format=text)",
+      "Bash(powershell.exe -Command \"Add-Type -AssemblyName ''DocumentFormat.OpenXml''; echo ''loaded''\")",
+      "Bash(unzip -o tool1-chargeback-calculator.docx -d /tmp/chargeback_docx)",
+      "Read(//tmp/chargeback_docx/word/**)",
+      "Bash(sed 's/<[^>]*>//g')",
+      "Bash(unzip -o blockify-brand-guidelines.docx -d /tmp/brand_docx)",
+      "Read(//tmp/brand_docx/word/**)"
+    ]
+  }
+}
