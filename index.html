@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chargeback Rate Calculator — Free Tool for Online Sellers | Blockify</title>
+  <meta name="description" content="Calculate your chargeback rate instantly. See if you're above Visa or Mastercard thresholds. Free tool — no signup needed.">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://blockifyapp.com/chargeback-rate-calculator">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Sticky Navigation -->
+  <nav class="nav" id="nav">
+    <div class="nav__container">
+      <a href="https://blockifyapp.com" class="nav__logo" aria-label="Blockify Home">
+        <span class="nav__wordmark">Blockify</span>
+      </a>
+      <a href="https://apps.shopify.com/blockify" class="nav__cta" target="_blank" rel="noopener">
+        Protect Your Store &rarr;
+      </a>
+    </div>
+  </nav>
+
+  <!-- Hero / H1 Section -->
+  <header class="hero">
+    <div class="container">
+      <p class="hero__label">Free Tool</p>
+      <h1 class="hero__title">Chargeback Rate Calculator</h1>
+      <p class="hero__subtitle">
+        Calculate your chargeback rate instantly, compare it against Visa, Mastercard, and PayPal thresholds, and understand the true financial cost of your chargebacks. Works for any online seller — Shopify, WooCommerce, Wix, or standalone.
+      </p>
+    </div>
+  </header>
+
+  <!-- Calculator Widget -->
+  <main class="calculator-section">
+    <div class="container">
+      <div class="calculator" id="calculator">
+
+        <!-- Tab Navigation -->
+        <div class="calculator__tabs" role="tablist">
+          <button class="calculator__tab calculator__tab--active" role="tab" aria-selected="true" aria-controls="panel-rate" id="tab-rate" data-tab="rate">
+            Rate Calculator
+          </button>
+          <button class="calculator__tab" role="tab" aria-selected="false" aria-controls="panel-cost" id="tab-cost" data-tab="cost">
+            Cost Calculator
+          </button>
+        </div>
+
+        <!-- Tab 1: Rate Calculator -->
+        <div class="calculator__panel calculator__panel--active" role="tabpanel" id="panel-rate" aria-labelledby="tab-rate">
+          <form class="calculator__form" id="form-rate" novalidate>
+            <div class="form-grid">
+
+              <div class="form-group">
+                <label for="total-orders" class="form-label">Total Orders This Month <span class="form-required">*</span></label>
+                <input type="number" id="total-orders" class="form-input" min="0" step="1" placeholder="e.g. 1000" required>
+              </div>
+
+              <div class="form-group">
+                <label for="chargebacks" class="form-label">Chargebacks / Disputes <span class="form-required">*</span></label>
+                <input type="number" id="chargebacks" class="form-input" min="0" step="1" placeholder="e.g. 5" required>
+              </div>
+
+              <div class="form-group">
+                <label for="card-network" class="form-label">Card Network <span class="form-required">*</span></label>
+                <select id="card-network" class="form-select" required>
+                  <option value="all">All Networks</option>
+                  <option value="visa">Visa</option>
+                  <option value="mastercard">Mastercard</option>
+                  <option value="paypal">PayPal</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="industry" class="form-label">Industry <span class="form-optional">(Optional)</span></label>
+                <select id="industry" class="form-select">
+                  <option value="general">General Ecommerce</option>
+                  <option value="digital">Digital Goods / SaaS</option>
+                  <option value="fashion">Fashion / Apparel</option>
+                  <option value="travel">Travel &amp; Hospitality</option>
+                  <option value="food">Food &amp; Beverage</option>
+                  <option value="luxury">Luxury Goods</option>
+                </select>
+              </div>
+
+              <!-- Mastercard: previous month transactions (shown conditionally) -->
+              <div class="form-group form-group--hidden" id="prev-month-group">
+                <label for="prev-month-orders" class="form-label">Previous Month Transactions <span class="form-required">*</span></label>
+                <input type="number" id="prev-month-orders" class="form-input" min="0" step="1" placeholder="e.g. 950">
+                <p class="form-hint">Mastercard uses last month's transaction count.</p>
+              </div>
+
+              <!-- PayPal: 3-month totals (shown conditionally) -->
+              <div class="form-group form-group--hidden" id="paypal-orders-group">
+                <label for="paypal-total-orders" class="form-label">Total Transactions (Rolling 3 Months) <span class="form-required">*</span></label>
+                <input type="number" id="paypal-total-orders" class="form-input" min="0" step="1" placeholder="e.g. 3000">
+                <p class="form-hint">PayPal uses a rolling 3-month window.</p>
+              </div>
+
+              <div class="form-group form-group--hidden" id="paypal-disputes-group">
+                <label for="paypal-total-disputes" class="form-label">Total Disputes (Rolling 3 Months) <span class="form-required">*</span></label>
+                <input type="number" id="paypal-total-disputes" class="form-input" min="0" step="1" placeholder="e.g. 15">
+              </div>
+
+            </div>
+
+            <button type="submit" class="btn btn--primary" id="btn-calculate-rate">Calculate Chargeback Rate</button>
+          </form>
+
+          <!-- Rate Result (hidden until calculated) -->
+          <div class="result result--hidden" id="result-rate">
+            <div class="result__rate">
+              <span class="result__percentage" id="rate-percentage">0.00%</span>
+              <span class="result__verdict" id="rate-verdict">Safe</span>
+            </div>
+
+            <!-- Visual Gauge -->
+            <div class="gauge" id="rate-gauge">
+              <div class="gauge__track">
+                <div class="gauge__fill" id="gauge-fill"></div>
+                <div class="gauge__marker" id="gauge-marker"></div>
+              </div>
+              <div class="gauge__labels">
+                <span>0%</span>
+                <span>0.65%</span>
+                <span>0.90%</span>
+                <span>1.50%</span>
+                <span>2.00%</span>
+              </div>
+            </div>
+
+            <!-- Threshold Cards -->
+            <div class="threshold-cards" id="threshold-cards">
+              <!-- Populated by JS -->
+            </div>
+
+            <!-- CTA Block -->
+            <div class="cta-block">
+              <p class="cta-block__text">Reduce chargebacks automatically — Block fraudulent orders before they happen with Blockify</p>
+              <a href="https://apps.shopify.com/blockify" class="btn btn--cta" target="_blank" rel="noopener">Try Blockify Free &rarr;</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Cost Calculator -->
+        <div class="calculator__panel" role="tabpanel" id="panel-cost" aria-labelledby="tab-cost" hidden>
+          <form class="calculator__form" id="form-cost" novalidate>
+            <div class="form-grid">
+
+              <div class="form-group">
+                <label for="monthly-revenue" class="form-label">Monthly Revenue ($) <span class="form-required">*</span></label>
+                <input type="number" id="monthly-revenue" class="form-input" min="0" step="0.01" placeholder="e.g. 50000" required>
+              </div>
+
+              <div class="form-group">
+                <label for="monthly-chargebacks" class="form-label">Chargebacks per Month <span class="form-required">*</span></label>
+                <input type="number" id="monthly-chargebacks" class="form-input" min="0" step="1" placeholder="e.g. 10" required>
+              </div>
+
+              <div class="form-group">
+                <label for="avg-order-value" class="form-label">Average Order Value ($) <span class="form-required">*</span></label>
+                <input type="number" id="avg-order-value" class="form-input" min="0" step="0.01" placeholder="e.g. 75" required>
+              </div>
+
+              <div class="form-group">
+                <label for="chargeback-fee" class="form-label">Chargeback Fee per Case ($) <span class="form-required">*</span></label>
+                <input type="number" id="chargeback-fee" class="form-input" min="0" step="0.01" placeholder="25" value="25" required>
+                <p class="form-hint">Default: $25. Stripe: $15, Banks: $25–$100.</p>
+              </div>
+
+            </div>
+
+            <button type="submit" class="btn btn--primary" id="btn-calculate-cost">Calculate True Cost</button>
+          </form>
+
+          <!-- Cost Result (hidden until calculated) -->
+          <div class="result result--hidden" id="result-cost">
+            <div class="cost-cards">
+              <div class="cost-card">
+                <p class="cost-card__label">Direct Loss / Month</p>
+                <p class="cost-card__value" id="cost-direct">$0</p>
+              </div>
+              <div class="cost-card cost-card--highlight">
+                <p class="cost-card__label">True Cost / Month</p>
+                <p class="cost-card__value" id="cost-true">$0</p>
+              </div>
+              <div class="cost-card">
+                <p class="cost-card__label">Annual Loss Estimate</p>
+                <p class="cost-card__value" id="cost-annual">$0</p>
+              </div>
+              <div class="cost-card">
+                <p class="cost-card__label">% of Revenue Lost</p>
+                <p class="cost-card__value" id="cost-revenue-pct">0%</p>
+              </div>
+            </div>
+
+            <!-- Hidden Cost Info Box -->
+            <div class="info-box">
+              <p class="info-box__title">Why is the "true cost" so much higher?</p>
+              <p class="info-box__text">
+                According to LexisNexis (2024), every $1 lost to fraud actually costs merchants $4.61 when you factor in lost merchandise, shipping, processing fees, operational costs, and penalty fees. This multiplier is applied to the order value portion of each chargeback.
+              </p>
+            </div>
+
+            <!-- CTA Block -->
+            <div class="cta-block">
+              <p class="cta-block__text">Reduce chargebacks automatically — Block fraudulent orders before they happen with Blockify</p>
+              <a href="https://apps.shopify.com/blockify" class="btn btn--cta" target="_blank" rel="noopener">Try Blockify Free &rarr;</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Reference Tables Section -->
+  <section class="reference-section" id="thresholds">
+    <div class="container">
+      <h2 class="section-title">Network Chargeback Thresholds</h2>
+      <p class="section-subtitle">Card networks impose monitoring programs when your chargeback rate exceeds these levels.</p>
+      <div class="table-wrapper">
+        <table class="data-table" id="table-thresholds">
+          <thead>
+            <tr>
+              <th>Network</th>
+              <th>Program</th>
+              <th>Threshold</th>
+              <th>Consequence</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Visa</td>
+              <td>Early Warning</td>
+              <td>0.65%</td>
+              <td>Monitored — no fines yet</td>
+            </tr>
+            <tr>
+              <td>Visa</td>
+              <td>Standard</td>
+              <td>0.90%</td>
+              <td>Fines up to $25,000/month</td>
+            </tr>
+            <tr>
+              <td>Visa</td>
+              <td>Excessive</td>
+              <td>1.80%</td>
+              <td>Risk of account termination</td>
+            </tr>
+            <tr>
+              <td>Mastercard</td>
+              <td>Monitored</td>
+              <td>1.00%</td>
+              <td>Fines from $1,000/month</td>
+            </tr>
+            <tr>
+              <td>Mastercard</td>
+              <td>Excessive</td>
+              <td>1.50%</td>
+              <td>Higher fines, possible termination</td>
+            </tr>
+            <tr>
+              <td>PayPal</td>
+              <td>High Volume Fee</td>
+              <td>1.50%</td>
+              <td>Extra dispute fee applied per case</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section-title" style="margin-top: 3rem;">Industry Benchmarks</h2>
+      <p class="section-subtitle">Average chargeback rates by industry, for comparison.</p>
+      <div class="table-wrapper">
+        <table class="data-table" id="table-benchmarks">
+          <thead>
+            <tr>
+              <th>Industry</th>
+              <th>Average Chargeback Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>General Ecommerce</td><td>0.60%</td></tr>
+            <tr><td>Digital Goods / SaaS</td><td>0.80%</td></tr>
+            <tr><td>Fashion / Apparel</td><td>0.75%</td></tr>
+            <tr><td>Travel &amp; Hospitality</td><td>0.89–1.10%</td></tr>
+            <tr><td>Food &amp; Beverage</td><td>0.12%</td></tr>
+            <tr><td>Luxury Goods</td><td>0.70%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section" id="faq">
+    <div class="container">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <div class="faq-list" id="faq-list">
+
+        <details class="faq-item">
+          <summary class="faq-question">How do I calculate my chargeback rate?</summary>
+          <p class="faq-answer">Divide the number of chargebacks by the total number of transactions in the same period, then multiply by 100. Visa uses the current month's transactions; Mastercard uses the previous month's count.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">What is a good chargeback rate?</summary>
+          <p class="faq-answer">For most ecommerce sellers, keeping your rate below 0.65% is the safe zone. Between 0.65% and 0.90% is a warning zone for Visa. Above 0.90% places you in Visa's standard monitoring program, which carries financial penalties.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">What happens if my chargeback rate is too high?</summary>
+          <p class="faq-answer">Card networks place you in a monitoring program with monthly fines — Visa can charge up to $25,000/month, Mastercard starts at $1,000/month. Persistent high rates can result in your merchant account being terminated.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">Does winning a chargeback dispute lower my rate?</summary>
+          <p class="faq-answer">No. Card networks count every chargeback filed against you, regardless of outcome. This is why preventing chargebacks from being filed in the first place is far more valuable than winning disputes after the fact.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">How is Mastercard chargeback rate different from Visa?</summary>
+          <p class="faq-answer">Mastercard divides chargebacks filed this month by transactions processed last month. Visa divides chargebacks this month by transactions this month. This means a sudden increase in orders (e.g. after a sale) can cause your Mastercard rate to spike the following month.</p>
+        </details>
+
+        <details class="faq-item">
+          <summary class="faq-question">What is the fastest way to lower my chargeback rate?</summary>
+          <p class="faq-answer">Block high-risk orders before fulfillment using fraud prevention tools, use IP and email verification at checkout, set up chargeback alert services to refund before disputes escalate, and ensure clear billing descriptors so customers recognize charges.</p>
+        </details>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer__text">
+        Built by <a href="https://blockifyapp.com" class="footer__link">Blockify</a> — Trusted by 20,000+ merchants worldwide. Protect your store from entry to checkout.
+      </p>
+    </div>
+  </footer>
+
+  <script src="js/thresholds.js"></script>
+  <script src="js/calculator.js"></script>
+  <script src="js/analytics.js"></script>
+  <script src="js/ui.js"></script>
+
+</body>
+</html>
