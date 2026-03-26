@@ -590,6 +590,110 @@ a {
   margin-bottom: var(--space-md);
 }
 
+/* ── How to Use Section ── */
+
+.how-to-section {
+  padding: var(--space-4xl) 0;
+  background-color: var(--white);
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.step-card {
+  padding: var(--space-xl);
+  background-color: var(--surface);
+  border-radius: var(--radius-md);
+  position: relative;
+}
+
+.step-card__number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background-color: var(--accent-orange);
+  color: var(--white);
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 50%;
+  margin-bottom: var(--space-md);
+}
+
+.step-card__title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: var(--space-sm);
+}
+
+.step-card__text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--ink-secondary);
+}
+
+.step-card__text strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* ── Why Use This Tool Section ── */
+
+.why-section {
+  padding: var(--space-4xl) 0;
+}
+
+.why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.why-card {
+  padding: var(--space-xl);
+  background-color: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s ease;
+}
+
+.why-card:hover {
+  border-color: var(--accent-orange);
+}
+
+.why-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background-color: rgba(232, 57, 14, 0.08);
+  color: var(--accent-orange);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-md);
+}
+
+.why-card__title {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: var(--space-sm);
+}
+
+.why-card__text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink-secondary);
+}
+
 /* ── Reference Section ── */
 
 .reference-section {
@@ -792,6 +896,14 @@ a {
   .data-table td {
     padding: 10px 12px;
   }
+
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .why-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Responsive — Tablet (max-width: 768px) ── */
@@ -806,6 +918,10 @@ a {
   }
 
   .threshold-cards {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .why-grid {
     grid-template-columns: 1fr 1fr;
   }
 }
