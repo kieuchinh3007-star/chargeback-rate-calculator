@@ -112,11 +112,12 @@
 
             </div>
 
+            <p class="form-error" id="rate-error" role="alert" aria-live="assertive"></p>
             <button type="submit" class="btn btn--primary" id="btn-calculate-rate">Calculate Chargeback Rate</button>
           </form>
 
           <!-- Rate Result (hidden until calculated) -->
-          <div class="result result--hidden" id="result-rate">
+          <div class="result result--hidden" id="result-rate" role="region" aria-live="polite" aria-label="Rate Calculator Results">
             <div class="result__rate">
               <span class="result__percentage" id="rate-percentage">0.00%</span>
               <span class="result__verdict" id="rate-verdict">Safe</span>
@@ -178,11 +179,12 @@
 
             </div>
 
+            <p class="form-error" id="cost-error" role="alert" aria-live="assertive"></p>
             <button type="submit" class="btn btn--primary" id="btn-calculate-cost">Calculate True Cost</button>
           </form>
 
           <!-- Cost Result (hidden until calculated) -->
-          <div class="result result--hidden" id="result-cost">
+          <div class="result result--hidden" id="result-cost" role="region" aria-live="polite" aria-label="Cost Calculator Results">
             <div class="cost-cards">
               <div class="cost-card">
                 <p class="cost-card__label">Direct Loss / Month</p>

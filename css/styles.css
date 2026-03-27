@@ -313,6 +313,14 @@ a {
   line-height: 1.5;
 }
 
+.form-error {
+  font-size: 13px;
+  color: #c0392b;
+  line-height: 1.5;
+  min-height: 1.2em;
+  margin-bottom: 8px;
+}
+
 /* ── Buttons ── */
 
 .btn {

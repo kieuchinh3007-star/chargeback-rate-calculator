@@ -18,9 +18,12 @@
       tabs.forEach(function (t) {
         t.classList.remove('calculator__tab--active');
         t.setAttribute('aria-selected', 'false');
+        t.setAttribute('tabindex', '-1');
       });
       this.classList.add('calculator__tab--active');
       this.setAttribute('aria-selected', 'true');
+      this.setAttribute('tabindex', '0');
+      this.focus();
 
       panels.forEach(function (p) {
         p.classList.remove('calculator__panel--active');
@@ -65,8 +68,12 @@
   var formRate = document.getElementById('form-rate');
   var resultRate = document.getElementById('result-rate');
 
+  var rateError = document.getElementById('rate-error');
+
   formRate.addEventListener('submit', function (e) {
     e.preventDefault();
+
+    rateError.textContent = '';
 
     var network = networkSelect.value;
     var inputs = {
@@ -79,15 +86,15 @@
 
     // Validation
     if (network === 'mastercard' && inputs.prevMonthOrders <= 0) {
-      alert('Please enter the previous month\'s transaction count for Mastercard.');
+      rateError.textContent = 'Please enter the previous month\'s transaction count for Mastercard.';
       return;
     }
     if (network === 'paypal' && (inputs.paypalTotalOrders <= 0 || inputs.paypalTotalDisputes < 0)) {
-      alert('Please enter the rolling 3-month totals for PayPal.');
+      rateError.textContent = 'Please enter the rolling 3-month totals for PayPal.';
       return;
     }
     if (network !== 'paypal' && inputs.totalOrders <= 0) {
-      alert('Please enter your total orders this month.');
+      rateError.textContent = 'Please enter your total orders this month.';
       return;
     }
 
@@ -173,9 +180,12 @@
 
   var formCost = document.getElementById('form-cost');
   var resultCost = document.getElementById('result-cost');
+  var costError = document.getElementById('cost-error');
 
   formCost.addEventListener('submit', function (e) {
     e.preventDefault();
+
+    costError.textContent = '';
 
     var inputs = {
       monthlyRevenue: parseFloat(document.getElementById('monthly-revenue').value) || 0,
@@ -185,7 +195,7 @@
     };
 
     if (inputs.monthlyRevenue <= 0 || inputs.monthlyChargebacks <= 0 || inputs.avgOrderValue <= 0) {
-      alert('Please fill in all required fields with values greater than zero.');
+      costError.textContent = 'Please fill in all required fields with values greater than zero.';
       return;
     }
 
