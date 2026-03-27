@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chargeback Rate Calculator — Test Suite</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 0.25rem;
+    }
+
+    .subtitle {
+      font-size: 0.85rem;
+      color: #64748b;
+      margin-bottom: 1.75rem;
+    }
+
+    /* Summary bar */
+    .summary {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      background: #1e2330;
+      border: 1px solid #2d3447;
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .summary-badge {
+      font-size: 1.75rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .summary-badge.all-pass { color: #22c55e; }
+    .summary-badge.has-fail { color: #ef4444; }
+
+    .summary-label {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .summary-divider {
+      width: 1px;
+      height: 36px;
+      background: #2d3447;
+    }
+
+    .stat { text-align: center; }
+    .stat-num { font-size: 1.4rem; font-weight: 700; }
+    .stat-num.pass { color: #22c55e; }
+    .stat-num.fail { color: #ef4444; }
+    .stat-label { font-size: 0.75rem; color: #64748b; margin-top: 1px; }
+
+    .status-text {
+      margin-left: auto;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .status-text.all-pass { color: #22c55e; }
+    .status-text.has-fail { color: #ef4444; }
+
+    /* Section headings */
+    .section-heading {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #475569;
+      margin: 1.5rem 0 0.5rem;
+    }
+
+    /* Test list */
+    .test-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .test-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      padding: 0.55rem 0.85rem;
+      border-radius: 7px;
+      font-size: 0.84rem;
+      line-height: 1.45;
+      border: 1px solid transparent;
+    }
+
+    .test-item.pass {
+      background: #0d2318;
+      border-color: #14532d44;
+      color: #bbf7d0;
+    }
+
+    .test-item.fail {
+      background: #2a0d0d;
+      border-color: #7f1d1d55;
+      color: #fecaca;
+    }
+
+    .test-icon {
+      flex-shrink: 0;
+      font-size: 0.8rem;
+      margin-top: 1px;
+      font-style: normal;
+    }
+
+    .test-name {
+      flex: 1;
+      color: inherit;
+    }
+
+    .test-error {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.76rem;
+      color: #f87171;
+      font-family: 'Menlo', 'Consolas', monospace;
+    }
+
+    /* Error banner (load failure) */
+    .load-error {
+      background: #2a0d0d;
+      border: 1px solid #7f1d1d;
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      color: #fca5a5;
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .load-error strong { color: #ef4444; }
+
+    footer {
+      margin-top: 2.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      color: #334155;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Chargeback Rate Calculator — Test Suite</h1>
+    <p class="subtitle">Automated tests for <code>js/thresholds.js</code> and <code>js/calculator.js</code></p>
+
+    <div id="load-error-banner" style="display:none"></div>
+    <div id="summary"></div>
+    <div id="results"></div>
+
+    <footer>Open in any browser — no build step required</footer>
+  </div>
+
+  <!-- Load the modules under test -->
+  <script src="js/thresholds.js"></script>
+  <script src="js/calculator.js"></script>
+
+  <script>
+    /* ------------------------------------------------------------------ */
+    /*  Mini test runner                                                    */
+    /* ------------------------------------------------------------------ */
+
+    const suites = [];
+    let currentSuite = null;
+
+    function describe(name, fn) {
+      currentSuite = { name, tests: [] };
+      suites.push(currentSuite);
+      fn();
+      currentSuite = null;
+    }
+
+    function assert(condition, label) {
+      const test = { label, pass: !!condition, error: null };
+      (currentSuite ? currentSuite.tests : (suites[suites.length - 1] || { tests: [] }).tests).push(test);
+    }
+
+    // Wrap assert so thrown errors are caught and reported as failures
+    function assertSafe(fn, label) {
+      try {
+        fn();
+      } catch (e) {
+        if (currentSuite) {
+          currentSuite.tests.push({ label, pass: false, error: e.message });
+        }
+      }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /*  Test definitions                                                    */
+    /* ------------------------------------------------------------------ */
+
+    describe('Thresholds Data', () => {
+      assert(NETWORK_THRESHOLDS.visa.length === 3, 'Visa has 3 thresholds');
+      assert(NETWORK_THRESHOLDS.mastercard.length === 2, 'Mastercard has 2 thresholds');
+      assert(NETWORK_THRESHOLDS.paypal.length === 1, 'PayPal has 1 threshold');
+      assert(NETWORK_THRESHOLDS.visa[0].rate === 0.65, 'Visa early warning = 0.65');
+      assert(NETWORK_THRESHOLDS.visa[1].rate === 0.90, 'Visa standard = 0.90');
+      assert(NETWORK_THRESHOLDS.visa[2].rate === 1.80, 'Visa excessive = 1.80');
+      assert(ALL_NETWORK_THRESHOLDS === NETWORK_THRESHOLDS.visa, 'ALL uses Visa thresholds');
+    });
+
+    describe('Industry Benchmarks', () => {
+      assert(INDUSTRY_BENCHMARKS.general.rate === 0.60, 'General = 0.60%');
+      assert(INDUSTRY_BENCHMARKS.food.rate === 0.12, 'Food = 0.12%');
+      assert(FRAUD_COST_MULTIPLIER === 4.61, 'Multiplier = 4.61');
+    });
+
+    describe('calculateChargebackRate — Visa / All', () => {
+      assert(calculateChargebackRate('visa', { chargebacks: 5, totalOrders: 1000 }) === 0.5, 'Visa: 5/1000 = 0.5%');
+      assert(calculateChargebackRate('all',  { chargebacks: 10, totalOrders: 1000 }) === 1.0, 'All: 10/1000 = 1.0%');
+    });
+
+    describe('calculateChargebackRate — Mastercard', () => {
+      assert(
+        calculateChargebackRate('mastercard', { chargebacks: 10, prevMonthOrders: 900 }).toFixed(4) === (10 / 900 * 100).toFixed(4),
+        'MC: 10/900 prev month'
+      );
+    });
+
+    describe('calculateChargebackRate — PayPal', () => {
+      assert(
+        calculateChargebackRate('paypal', { paypalTotalDisputes: 15, paypalTotalOrders: 3000 }) === 0.5,
+        'PayPal: 15/3000 = 0.5%'
+      );
+    });
+
+    describe('calculateChargebackRate — Edge: zero orders', () => {
+      assert(calculateChargebackRate('visa',       { chargebacks: 5, totalOrders: 0 })          === 0, 'Zero orders = 0');
+      assert(calculateChargebackRate('mastercard', { chargebacks: 5, prevMonthOrders: 0 })       === 0, 'MC zero prev = 0');
+      assert(calculateChargebackRate('paypal',     { paypalTotalDisputes: 5, paypalTotalOrders: 0 }) === 0, 'PayPal zero = 0');
+    });
+
+    describe('calculateChargebackRate — Edge: undefined inputs', () => {
+      assert(calculateChargebackRate('visa',       {}) === 0, 'Undefined inputs = 0');
+      assert(calculateChargebackRate('mastercard', {}) === 0, 'MC undefined = 0');
+      assert(calculateChargebackRate('paypal',     {}) === 0, 'PayPal undefined = 0');
+    });
+
+    describe('calculateChargebackRate — Edge: negative orders', () => {
+      assert(calculateChargebackRate('visa', { chargebacks: 5, totalOrders: -100 }) === 0, 'Negative orders = 0');
+    });
+
+    describe('getRiskLevel — Visa thresholds', () => {
+      var vt = NETWORK_THRESHOLDS.visa;
+      assert(getRiskLevel(0.3,  vt).level === 'safe',      '0.3% Visa = safe');
+      assert(getRiskLevel(0.65, vt).level === 'warning',   '0.65% Visa = warning');
+      assert(getRiskLevel(0.80, vt).level === 'warning',   '0.80% Visa = warning');
+      assert(getRiskLevel(0.90, vt).level === 'high',      '0.90% Visa = high');
+      assert(getRiskLevel(1.80, vt).level === 'excessive', '1.80% Visa = excessive');
+      assert(getRiskLevel(3.0,  vt).level === 'excessive', '3.0% Visa = excessive');
+      assert(getRiskLevel(0.0,  vt).level === 'safe',      '0% = safe');
+    });
+
+    describe('getRiskLevel — colors', () => {
+      var vt = NETWORK_THRESHOLDS.visa;
+      assert(getRiskLevel(0.3, vt).color === 'success', 'Safe = success color');
+      assert(getRiskLevel(0.7, vt).color === 'warning', 'Warning = warning color');
+      assert(getRiskLevel(1.0, vt).color === 'danger',  'High = danger color');
+    });
+
+    describe('getRiskLevel — empty thresholds', () => {
+      assert(getRiskLevel(0.5, []).level === 'unknown', 'Empty thresholds = unknown');
+    });
+
+    describe('getRiskLevel — single threshold (PayPal)', () => {
+      var pt = NETWORK_THRESHOLDS.paypal;
+      assert(getRiskLevel(1.0,  pt).level === 'safe',      '1.0% PayPal = safe');
+      assert(getRiskLevel(1.50, pt).level === 'excessive',  '1.50% PayPal = excessive');
+    });
+
+    describe('getThresholdsForNetwork', () => {
+      assert(getThresholdsForNetwork('visa')            === NETWORK_THRESHOLDS.visa, 'getThresholds visa');
+      assert(getThresholdsForNetwork('all')             === ALL_NETWORK_THRESHOLDS,  'getThresholds all');
+      assert(getThresholdsForNetwork('unknown_network') === ALL_NETWORK_THRESHOLDS,  'Unknown network falls back to All');
+    });
+
+    describe('calculateChargebackCost — standard', () => {
+      var cost = calculateChargebackCost({ monthlyRevenue: 50000, monthlyChargebacks: 10, avgOrderValue: 75, chargebackFee: 25 });
+      assert(cost.directLoss === 1000,                                                    'Direct loss: 10*(75+25) = 1000');
+      assert(cost.trueCost === 10 * 75 * 4.61 + 10 * 25,                                 'True cost formula correct');
+      assert(cost.annualLoss === cost.trueCost * 12,                                      'Annual = trueCost * 12');
+      assert(Math.abs(cost.revenuePercent - (cost.trueCost / 50000 * 100)) < 0.01,        'Revenue % correct');
+    });
+
+    describe('calculateChargebackCost — Edge: zero revenue', () => {
+      var zeroCost = calculateChargebackCost({ monthlyRevenue: 0, monthlyChargebacks: 10, avgOrderValue: 75, chargebackFee: 25 });
+      assert(zeroCost.revenuePercent === 0, 'Zero revenue = 0% (no division by zero)');
+    });
+
+    describe('calculateChargebackCost — Edge: zero chargebacks', () => {
+      var noCB = calculateChargebackCost({ monthlyRevenue: 50000, monthlyChargebacks: 0, avgOrderValue: 75, chargebackFee: 25 });
+      assert(noCB.directLoss === 0, 'Zero chargebacks = 0 direct loss');
+      assert(noCB.trueCost   === 0, 'Zero chargebacks = 0 true cost');
+    });
+
+    /* ------------------------------------------------------------------ */
+    /*  Render                                                              */
+    /* ------------------------------------------------------------------ */
+
+    (function render() {
+      let totalPass = 0;
+      let totalFail = 0;
+
+      suites.forEach(s => {
+        s.tests.forEach(t => {
+          if (t.pass) totalPass++; else totalFail++;
+        });
+      });
+
+      const allPass = totalFail === 0;
+
+      // Summary bar
+      const summary = document.getElementById('summary');
+      summary.innerHTML = `
+        <div class="summary">
+          <div class="stat">
+            <div class="summary-badge ${allPass ? 'all-pass' : 'has-fail'}">${totalPass + totalFail}</div>
+            <div class="summary-label">Total Tests</div>
+          </div>
+          <div class="summary-divider"></div>
+          <div class="stat">
+            <div class="stat-num pass">${totalPass}</div>
+            <div class="stat-label">Passed</div>
+          </div>
+          <div class="stat">
+            <div class="stat-num fail">${totalFail}</div>
+            <div class="stat-label">Failed</div>
+          </div>
+          <div class="status-text ${allPass ? 'all-pass' : 'has-fail'}">
+            ${allPass ? 'All tests passed' : `${totalFail} test${totalFail !== 1 ? 's' : ''} failed`}
+          </div>
+        </div>
+      `;
+
+      // Test results by suite
+      const results = document.getElementById('results');
+      suites.forEach(suite => {
+        const heading = document.createElement('div');
+        heading.className = 'section-heading';
+        heading.textContent = suite.name;
+        results.appendChild(heading);
+
+        const list = document.createElement('div');
+        list.className = 'test-list';
+
+        suite.tests.forEach(test => {
+          const item = document.createElement('div');
+          item.className = `test-item ${test.pass ? 'pass' : 'fail'}`;
+
+          const icon = document.createElement('i');
+          icon.className = 'test-icon';
+          icon.textContent = test.pass ? '✓' : '✗';
+
+          const name = document.createElement('span');
+          name.className = 'test-name';
+          name.textContent = test.label;
+          if (test.error) {
+            const err = document.createElement('span');
+            err.className = 'test-error';
+            err.textContent = test.error;
+            name.appendChild(err);
+          }
+
+          item.appendChild(icon);
+          item.appendChild(name);
+          list.appendChild(item);
+        });
+
+        results.appendChild(list);
+      });
+    })();
+  </script>
+</body>
+</html>
